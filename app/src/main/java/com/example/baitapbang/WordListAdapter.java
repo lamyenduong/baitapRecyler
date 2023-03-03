@@ -8,35 +8,52 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.LinkedList;
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 
-public class WordListAdapter extends RecyclerView.Adapter<WordViewHolder>{
+public class WordListAdapter extends RecyclerView.Adapter<WordViewHolder> {
 
-    private LinkedList<String> mWordList = new LinkedList<>();
-
+    private ArrayList<News> mNews;
+    Context context;
     private final LayoutInflater mInflater;
 
-    public WordListAdapter(Context context, LinkedList<String> wordlist) {
+    public WordListAdapter(Context context, ArrayList<News> news) {
         mInflater = LayoutInflater.from(context);
-        this.mWordList = wordlist;
+        this.mNews = news;
+        this.context = context;
     }
 
     @NonNull
     @Override
     public WordViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View mItemView = mInflater.inflate(R.layout.layout, parent, false);
-        return new WordViewHolder(mItemView, this);
+        return new WordViewHolder(mItemView, this, context);
     }
 
     @Override
     public void onBindViewHolder(@NonNull WordViewHolder holder, int position) {
-        String mCurrent = mWordList.get(position);
-        holder.wordItemView.setText(mCurrent);
+        News mCurrent = mNews.get(position);
+
+        holder.setId(mCurrent.getId());
+        holder.getTv_title().setText(mCurrent.getTitle_photo());
+        Picasso.get().load(mCurrent.getSource_photo()).resize(300, 400).centerCrop().into(holder.getIv_photo());
+
+        ArrayList<String> strDiv = new ArrayList<>();
+        strDiv.addAll(Arrays.asList(mCurrent.getDescription_photo().split(" ")));
+        if (strDiv.size() <= 10) {
+            holder.getTv_content().setText(mCurrent.getDescription_photo());
+        } else {
+            strDiv.subList(10, strDiv.size()).clear();
+            String strJoin = String.join(" ", strDiv);
+            holder.getTv_content().setText(strJoin + "...");
+        }
     }
 
     @Override
     public int getItemCount() {
-        return mWordList.size();
+        return mNews.size();
     }
 }
